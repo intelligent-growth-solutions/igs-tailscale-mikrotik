@@ -45,9 +45,11 @@ RUN GOARCH=$TARGETARCH go install -ldflags="\
 
 FROM ghcr.io/tailscale/alpine-base:3.16
 
-# # Set password
+# # Set random password
 # ARG TAILSCALE_PASSWORD="Pm36g58CzaLK"
-# RUN echo "root:$TAILSCALE_PASSWORD" | chpasswd
+
+RUN pass=$(cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo) && \
+    echo "root:${pass}" | chpasswd
 
 RUN apk add --no-cache ca-certificates iptables iproute2 bash sudo openssh
 
