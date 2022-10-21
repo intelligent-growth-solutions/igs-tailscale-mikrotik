@@ -24,7 +24,6 @@
 # Set PLATFORM as required for your router model. See:
 # https://mikrotik.com/products/matrix
 #
-PLATFORM="linux/arm"
 
 set -eu
 
@@ -39,7 +38,7 @@ docker buildx build \
   --build-arg VERSION_LONG=$VERSION_LONG \
   --build-arg VERSION_SHORT=$VERSION_SHORT \
   --build-arg VERSION_GIT_HASH=$VERSION_GIT_HASH \
-  --platform $PLATFORM \
+  --platform ${PLATFORM:="linux/arm/v7"} \
   --load \
   -t tailscale:tailscale .
 
