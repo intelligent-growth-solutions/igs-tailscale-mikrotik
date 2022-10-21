@@ -45,9 +45,9 @@ RUN GOARCH=$TARGETARCH go install -ldflags="\
 
 FROM ghcr.io/tailscale/alpine-base:3.16
 
-# Set password
-ARG TAILSCALE_PASSWORD="Pm36g58CzaLK"
-RUN echo "root:$TAILSCALE_PASSWORD" | chpasswd
+# # Set password
+# ARG TAILSCALE_PASSWORD="Pm36g58CzaLK"
+# RUN echo "root:$TAILSCALE_PASSWORD" | chpasswd
 
 RUN apk add --no-cache ca-certificates iptables iproute2 bash sudo openssh
 
@@ -55,6 +55,14 @@ RUN ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
 RUN ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
 
 COPY --from=build-env /go/bin/* /usr/local/bin/
+
+# Set up root SSH access and configure OpenSSH
+RUN mkdir /root/.ssh
+RUN chmod 700 /root/.ssh
+
+COPY pubkey /root/.ssh/authorized_keys
+RUN chmod 600 /root/.ssh/authorized_keys
+
 ADD sshd_config /etc/ssh/
 
 EXPOSE 22
