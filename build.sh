@@ -25,6 +25,17 @@
 # https://mikrotik.com/products/matrix
 #
 
+# Generate the docker builder
+builder=$(docker buildx ls | awk '{print $1}' | grep x32bit | grep -v x32bit0)
+
+if [[ $builder == '' ]];
+then
+  echo "Generating builder instance..."
+  docker buildx create --name x32bit --driver docker-container --platform linux/arm/v7
+fi
+
+exit 0
+
 set -eu
 
 if [ ! -d ./tailscale/.git ]
@@ -43,3 +54,6 @@ docker buildx build \
   -t tailscale:tailscale .
 
 docker save -o tailscale.tar tailscale:tailscale
+
+# Clean up tailscale repo
+rm -rf tailscale/
